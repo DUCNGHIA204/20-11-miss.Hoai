@@ -30,8 +30,8 @@
             top: 0;
             left: 0;
             outline: none;
-            touch-action: none;  /* Ngăn zoom/scroll khi touch */
-            cursor: pointer;     /* Bắt buộc Safari kích hoạt interactive */
+            touch-action: none;
+            cursor: pointer;
         }
 
         h1 {
@@ -77,14 +77,38 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .modal-content {
+            text-align: center;
+            max-width: 80vw;
         }
 
         .modal img {
             max-width: 70vw;
-            max-height: 70vh;
+            max-height: 60vh;
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        /* SỬA FONT CHỮ TẠI ĐÂY */
+        .caption {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            font-style: normal;
+            font-size: 1.2rem;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            max-width: 70vw;
+            line-height: 1.6;
+            letter-spacing: 0.3px;
         }
 
         /* Responsive Enhancements */
@@ -105,7 +129,12 @@
 
             .modal img {
                 max-width: 75vw;
-                max-height: 65vh;
+                max-height: 55vh;
+            }
+
+            .caption {
+                font-size: 1.1rem;
+                max-width: 75vw;
             }
         }
 
@@ -129,7 +158,12 @@
 
             .modal img {
                 max-width: 80vw;
-                max-height: 60vh;
+                max-height: 50vh;
+            }
+
+            .caption {
+                font-size: 1rem;
+                max-width: 80vw;
             }
         }
 
@@ -151,7 +185,12 @@
 
             .modal img {
                 max-width: 85vw;
-                max-height: 55vh;
+                max-height: 45vh;
+            }
+
+            .caption {
+                font-size: 0.9rem;
+                max-width: 85vw;
             }
         }
 
@@ -168,7 +207,11 @@
 
             .modal img {
                 max-width: 80vw;
-                max-height: 60vh;
+                max-height: 50vh;
+            }
+
+            .caption {
+                font-size: 1.1rem;
             }
         }
     </style>
@@ -189,8 +232,13 @@
             <!-- SVG path omitted for brevity -->
         </svg>
     </button>
+
+    <!-- Modal with Image + Caption -->
     <div class="modal" id="imageModal">
-        <img id="modalImage" src="" alt="Enlarged Image">
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Enlarged Image">
+            <div class="caption" id="imageCaption"></div>
+        </div>
     </div>
 
     <!-- Shaders (unchanged) -->
@@ -272,11 +320,23 @@
         }
     </script>
 
-    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+    <script
+        src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
     <script id="rendered-js" type="module">
         import * as THREE from "https://cdn.skypack.dev/three@0.135.0";
         import { gsap } from "https://cdn.skypack.dev/gsap@3.8.0";
         import { GLTFLoader } from "https://cdn.skypack.dev/three@0.135.0/examples/jsm/loaders/GLTFLoader";
+
+        // Danh sách câu chúc tương ứng với từng ảnh (theo thứ tự trong mảng movingImagePaths)
+        const wishes = [
+            "Gửi miss Hoài – thủ thư xịn nhất hệ mặt trời! Chúc cô lúc nào cũng vui như khi thấy sinh viên trả sách đúng hạn!",
+            "Cảm ơn cô vì luôn kiên nhẫn với những sinh viên 'quên trả sách nhẹ nhàng' – thật sự, cô là huyền thoại của thư viện!",
+            "Nếu thư viện là kho báu thì cô chính là người canh giữ tri thức với nụ cười ấm áp nhất quả đất!",
+            "Chúc cô Vân Hoài luôn tươi tắn, năng lượng và vẫn đủ sức 'truy lùng' mấy đứa mượn sách rồi biệt tăm!",
+            "Thư viện có hàng ngàn cuốn sách, nhưng cuốn nào cũng nhắc nhở chúng em về cô hihi – người thủ thư dễ thương và tận tâm nhất!",
+            "Cô ơi, chúc cô 20/11 thật nhiều niềm vui, ít phải nhắc sinh viên trả sách, và luôn là idol của cả thư viện!"
+        ];
+
 
         class World {
             constructor({
@@ -329,6 +389,7 @@
                 this.mouse = new THREE.Vector2();
                 this.modal = document.getElementById("imageModal");
                 this.modalImage = document.getElementById("modalImage");
+                this.caption = document.getElementById("imageCaption");
                 console.log("World initialized");
                 this.addToScene();
                 this.addButton();
@@ -430,7 +491,7 @@
                 });
 
                 const handleInteraction = (event) => {
-                    if (event.target === this.modal || event.target === this.modalImage) return;
+                    if (event.target === this.modal || event.target.closest('.modal-content')) return;
 
                     let clientX, clientY;
                     if (event.type.includes('touch')) {
@@ -450,9 +511,11 @@
                     if (intersects.length > 0) {
                         const hit = intersects[0].object;
                         const imgSrc = hit.userData.imagePath;
+                        const index = hit.userData.instanceId;
                         this.modalImage.src = imgSrc;
+                        this.caption.textContent = wishes[index] || "Yêu em nhiều lắm! [heart]";
                         this.modal.style.display = "flex";
-                        console.log("Modal opened on", event.type, "with:", imgSrc);
+                        console.log("Modal opened on", event.type, "with:", imgSrc, "Wish:", wishes[index]);
                     }
                 };
 
@@ -497,7 +560,7 @@
                 const speeds = new Float32Array(count);
                 const randoms = new Float32Array(count);
                 const randoms1 = new Float32Array(count);
-                const colorChoices = ["white","red","pink","crimson","hotpink","green","aquamarine","blue"];
+                const colorChoices = ["white", "red", "pink", "crimson", "hotpink", "green", "aquamarine", "blue"];
                 const squareGeometry = new THREE.PlaneGeometry(1, 1);
                 this.instancedGeometry = new THREE.InstancedBufferGeometry();
                 Object.keys(squareGeometry.attributes).forEach(attr => {
@@ -512,7 +575,7 @@
                     speeds[i] = Math.random() * this.parameters.max;
                     const i3 = i * 3;
                     const color = new THREE.Color(colorChoices[Math.floor(Math.random() * colorChoices.length)]);
-                    colors[i3] = color.r; colors[i3+1] = color.g; colors[i3+2] = color.b;
+                    colors[i3] = color.r; colors[i3 + 1] = color.g; colors[i3 + 2] = color.b;
                 }
                 this.instancedGeometry.setAttribute("random", new THREE.InstancedBufferAttribute(randoms, 1, false));
                 this.instancedGeometry.setAttribute("random1", new THREE.InstancedBufferAttribute(randoms1, 1, false));
@@ -554,7 +617,7 @@
                         this.isRunning = true;
                         gsap.to(this.audioBtn, { opacity: 0, duration: 1, ease: "power1.out" });
                     } else {
-                        this.loadMusic().then(() => {});
+                        this.loadMusic().then(() => { });
                     }
                 });
             }
@@ -604,7 +667,7 @@
                 const phis = new Float32Array(count);
                 const randoms = new Float32Array(count);
                 const randoms1 = new Float32Array(count);
-                const colorChoices = ["red","pink","hotpink","green","aquamarine","blue"];
+                const colorChoices = ["red", "pink", "hotpink", "green", "aquamarine", "blue"];
                 const squareGeometry = new THREE.PlaneGeometry(1, 1);
                 this.instancedGeometry = new THREE.InstancedBufferGeometry();
                 Object.keys(squareGeometry.attributes).forEach(attr => {
@@ -619,7 +682,7 @@
                     scales[i] = Math.random() * 0.35;
                     const i3 = i * 3;
                     const color = new THREE.Color(colorChoices[Math.floor(Math.random() * colorChoices.length)]);
-                    colors[i3] = color.r; colors[i3+1] = color.g; colors[i3+2] = color.b;
+                    colors[i3] = color.r; colors[i3 + 1] = color.g; colors[i3 + 2] = color.b;
                 }
                 this.instancedGeometry.setAttribute("phi", new THREE.InstancedBufferAttribute(phis, 1, false));
                 this.instancedGeometry.setAttribute("random", new THREE.InstancedBufferAttribute(randoms, 1, false));
@@ -636,7 +699,8 @@
                     "./image/2.jpg",
                     "./image/3.jpg",
                     "./image/4.jpg",
-                    "./image/5.jpg"
+                    "./image/5.jpg",
+                    "./image/6.jpg",
                 ];
 
                 this.movingImagesGroup = new THREE.Group();
