@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -86,34 +87,91 @@
 
         /* Responsive Enhancements */
         @media (max-width: 1024px) {
-            h1 { top: 8vh; font-size: 2.5vh; }
-            button { height: 10vh; width: 10vh; }
-            svg { width: 3vh; }
-            .modal img { max-width: 75vw; max-height: 65vh; }
+            h1 {
+                top: 8vh;
+                font-size: 2.5vh;
+            }
+
+            button {
+                height: 10vh;
+                width: 10vh;
+            }
+
+            svg {
+                width: 3vh;
+            }
+
+            .modal img {
+                max-width: 75vw;
+                max-height: 65vh;
+            }
         }
 
         @media (max-width: 768px) {
-            h1 { top: 6vh; left: 1rem; right: 1rem; font-size: 2.2vh; }
-            button { height: 9vh; width: 9vh; transform: translateY(1vh); }
-            svg { width: 2.8vh; }
-            .modal img { max-width: 80vw; max-height: 60vh; }
+            h1 {
+                top: 6vh;
+                left: 1rem;
+                right: 1rem;
+                font-size: 2.2vh;
+            }
+
+            button {
+                height: 9vh;
+                width: 9vh;
+                transform: translateY(1vh);
+            }
+
+            svg {
+                width: 2.8vh;
+            }
+
+            .modal img {
+                max-width: 80vw;
+                max-height: 60vh;
+            }
         }
 
         @media (max-width: 480px) {
-            h1 { top: 4vh; font-size: 1.8vh; }
-            button { height: 8vh; width: 8vh; transform: translateY(0); }
-            svg { width: 2.5vh; }
-            .modal img { max-width: 85vw; max-height: 55vh; }
+            h1 {
+                top: 4vh;
+                font-size: 1.8vh;
+            }
+
+            button {
+                height: 8vh;
+                width: 8vh;
+                transform: translateY(0);
+            }
+
+            svg {
+                width: 2.5vh;
+            }
+
+            .modal img {
+                max-width: 85vw;
+                max-height: 55vh;
+            }
         }
 
         @media (orientation: portrait) {
-            h1 { top: 12vh; font-size: 2.5vh; }
-            button { bottom: 5vh; transform: none; }
-            .modal img { max-width: 80vw; max-height: 60vh; }
+            h1 {
+                top: 12vh;
+                font-size: 2.5vh;
+            }
+
+            button {
+                bottom: 5vh;
+                transform: none;
+            }
+
+            .modal img {
+                max-width: 80vw;
+                max-height: 60vh;
+            }
         }
     </style>
     <script>
-        window.console = window.console || function(t) {};
+        window.console = window.console || function (t) { };
     </script>
     <script>
         if (document.location.search.match(/type=embed/gi)) {
@@ -121,6 +179,7 @@
         }
     </script>
 </head>
+
 <body translate="no">
     <canvas class="webgl" data-engine="three.js r135"></canvas>
     <button id="play-music" type="button" aria-label="Play music" style="opacity: 1;">
@@ -210,38 +269,9 @@
             gl_FragColor = vec4(texture * color * (strength + 0.6), 1.0);
         }
     </script>
-    <script type="x-shader/x-vertex" id="vertexShaderMovingImages">
-        #define M_PI 3.1415926535897932384626433832795
-        uniform float uTime;
-        uniform float uSize;
-        attribute float aScale;
-        attribute vec3 aColor;
-        attribute float phi;
-        attribute float random;
-        attribute float random1;
-        varying vec3 vColor;
-        varying vec2 vUv;
-        void main() {
-            float t = uTime * 0.05 + random * 2.0 * M_PI;
-            float radius = 2.5 + random1 * 1.5;
-            float angle = phi + t;
-            float height = sin(t * 0.5 + random) * 1.5;
-            vec3 myOffset = vec3(
-                radius * cos(angle),
-                height,
-                radius * sin(angle)
-            );
-            float scalePulse = 1.0 + 0.5 * sin(t * 2.0 + random1);
-            vec4 modelPosition = modelMatrix * vec4(myOffset, 1.0);
-            vec4 viewPosition = viewMatrix * modelPosition;
-            viewPosition.xyz += position * aScale * uSize * scalePulse;
-            gl_Position = projectionMatrix * viewPosition;
-            vColor = aColor;
-            vUv = uv;
-        }
-    </script>
 
-    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+    <script
+        src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
     <script id="rendered-js" type="module">
         import * as THREE from "https://cdn.skypack.dev/three@0.135.0";
         import { gsap } from "https://cdn.skypack.dev/gsap@3.8.0";
@@ -293,17 +323,14 @@
                 this.pixelRatio = Math.min(window.devicePixelRatio, 2);
                 this.renderer.setPixelRatio(this.pixelRatio);
                 this.renderer.setSize(this.width, this.height);
-                // Initialize raycaster with a larger threshold for better click detection
+                // Raycaster
                 this.raycaster = new THREE.Raycaster();
                 this.raycaster.params.Mesh.threshold = 0.7;
                 this.mouse = new THREE.Vector2();
-                // Modal elements
+                // Modal
                 this.modal = document.getElementById("imageModal");
                 this.modalImage = document.getElementById("modalImage");
-                if (!this.modal || !this.modalImage) {
-                    console.error("Modal or modal image element not found!");
-                }
-                console.log("World initialized, canvas:", canvas);
+                console.log("World initialized");
                 this.addToScene();
                 this.addButton();
                 this.addClickHandler();
@@ -312,7 +339,7 @@
                 this.listenToMouseMove();
             }
 
-            start() {}
+            start() { }
 
             render() {
                 this.renderer.render(this.scene, this.camera);
@@ -359,21 +386,22 @@
                     }
                 }
                 this.camera.lookAt(this.scene.position);
+
+                // Heart & Snow time
                 if (this.heartMaterial) {
                     this.heartMaterial.uniforms.uTime.value +=
                         this.time.delta * this.time.frequency * (1 + this.data * 0.2);
-                }
-                if (this.model) {
-                    this.model.rotation.y -= 0.0005 * this.time.delta * (1 + this.data);
                 }
                 if (this.snowMaterial) {
                     this.snowMaterial.uniforms.uTime.value +=
                         this.time.delta * 0.0004 * (1 + this.data);
                 }
-                if (this.movingImagesMaterial) {
-                    this.movingImagesMaterial.uniforms.uTime.value +=
-                        this.time.delta * 0.0004 * (1 + this.data);
+
+                // ROTATE MOVING IMAGES GROUP
+                if (this.movingImagesGroup) {
+                    this.movingImagesGroup.rotation.y += 0.005 * (1 + this.data * 0.5);
                 }
+
                 this.render();
                 this.time.current = this.time.elapsed;
                 requestAnimationFrame(this.loop.bind(this));
@@ -386,7 +414,6 @@
                     this.camera.aspect = this.width / this.height;
                     this.camera.updateProjectionMatrix();
                     this.renderer.setSize(this.width, this.height);
-                    console.log("Window resized:", this.width, this.height);
                 });
             }
 
@@ -401,53 +428,36 @@
                 });
             }
 
+            // ==================== CLICK HANDLER ====================
             addClickHandler() {
-                console.log("Setting up click handler for moving images");
-                // Prevent music button clicks from triggering image modal
                 this.audioBtn.addEventListener("click", (event) => {
                     event.stopPropagation();
-                    console.log("Music button clicked, stopping propagation");
                 });
 
                 window.addEventListener("click", (event) => {
-                    console.log("Window click detected at:", event.clientX, event.clientY);
-                    // Skip if clicking on the modal
-                    if (event.target === this.modal || event.target === this.modalImage) {
-                        console.log("Modal clicked, ignoring");
-                        return;
-                    }
+                    if (event.target === this.modal || event.target === this.modalImage) return;
 
-                    // Calculate normalized device coordinates
                     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                    console.log("Normalized mouse coords:", this.mouse.x, this.mouse.y);
 
-                    // Update raycaster
                     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-                    // Check intersections with moving images
-                    if (this.movingImages) {
-                        const intersects = this.raycaster.intersectObject(this.movingImages);
-                        if (intersects.length > 0) {
-                            console.log("Moving image clicked, instance ID:", intersects[0].instanceId);
-                            this.modalImage.src = "./image/nghia.jpg";
-                            this.modal.style.display = "flex";
-                            console.log("Modal opened with image: ./image/nghia.jpg");
-                        } else {
-                            console.log("No moving image hit");
-                        }
-                    } else {
-                        console.error("Moving images mesh not found!");
+                    // intersectObjects works with an array of meshes
+                    const intersects = this.raycaster.intersectObjects(this.movingImages, false);
+                    if (intersects.length > 0) {
+                        const hit = intersects[0].object;
+                        const imgSrc = hit.userData.imagePath;
+                        this.modalImage.src = imgSrc;
+                        this.modal.style.display = "flex";
                     }
                 });
 
-                // Close modal on click
                 this.modal.addEventListener("click", () => {
                     this.modal.style.display = "none";
-                    console.log("Modal closed");
                 });
             }
 
+            // ==================== HEART ====================
             addHeart() {
                 this.heartMaterial = new THREE.ShaderMaterial({
                     fragmentShader: document.getElementById("fragmentShader").textContent,
@@ -457,7 +467,7 @@
                         uSize: { value: 0.2 },
                         uTex: {
                             value: this.textureLoader.load(
-                                "./image/nghia.jpg",
+                                "./image/3.jpg",
                                 () => console.log("Heart texture loaded"),
                                 undefined,
                                 (err) => console.error("Error loading heart texture:", err)
@@ -469,21 +479,12 @@
                     transparent: true
                 });
                 const count = this.parameters.count;
-                const scales = new Float32Array(count * 1);
+                const scales = new Float32Array(count);
                 const colors = new Float32Array(count * 3);
                 const speeds = new Float32Array(count);
                 const randoms = new Float32Array(count);
                 const randoms1 = new Float32Array(count);
-                const colorChoices = [
-                    "white",
-                    "red",
-                    "pink",
-                    "crimson",
-                    "hotpink",
-                    "green",
-                    "aquamarine",
-                    "blue"
-                ];
+                const colorChoices = ["white","red","pink","crimson","hotpink","green","aquamarine","blue"];
                 const squareGeometry = new THREE.PlaneGeometry(1, 1);
                 this.instancedGeometry = new THREE.InstancedBufferGeometry();
                 Object.keys(squareGeometry.attributes).forEach(attr => {
@@ -492,77 +493,45 @@
                 this.instancedGeometry.index = squareGeometry.index;
                 this.instancedGeometry.maxInstancedCount = count;
                 for (let i = 0; i < count; i++) {
-                    const phi = Math.random() * Math.PI * 2;
-                    const i3 = 3 * i;
                     randoms[i] = Math.random();
                     randoms1[i] = Math.random();
                     scales[i] = Math.random() * 0.35;
-                    const colorIndex = Math.floor(Math.random() * colorChoices.length);
-                    const color = new THREE.Color(colorChoices[colorIndex]);
-                    colors[i3 + 0] = color.r;
-                    colors[i3 + 1] = color.g;
-                    colors[i3 + 2] = color.b;
                     speeds[i] = Math.random() * this.parameters.max;
+                    const i3 = i * 3;
+                    const color = new THREE.Color(colorChoices[Math.floor(Math.random() * colorChoices.length)]);
+                    colors[i3] = color.r; colors[i3+1] = color.g; colors[i3+2] = color.b;
                 }
-                this.instancedGeometry.setAttribute(
-                    "random",
-                    new THREE.InstancedBufferAttribute(randoms, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "random1",
-                    new THREE.InstancedBufferAttribute(randoms1, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "aScale",
-                    new THREE.InstancedBufferAttribute(scales, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "aSpeed",
-                    new THREE.InstancedBufferAttribute(speeds, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "aColor",
-                    new THREE.InstancedBufferAttribute(colors, 3, false)
-                );
+                this.instancedGeometry.setAttribute("random", new THREE.InstancedBufferAttribute(randoms, 1, false));
+                this.instancedGeometry.setAttribute("random1", new THREE.InstancedBufferAttribute(randoms1, 1, false));
+                this.instancedGeometry.setAttribute("aScale", new THREE.InstancedBufferAttribute(scales, 1, false));
+                this.instancedGeometry.setAttribute("aSpeed", new THREE.InstancedBufferAttribute(speeds, 1, false));
+                this.instancedGeometry.setAttribute("aColor", new THREE.InstancedBufferAttribute(colors, 3, false));
                 this.heart = new THREE.Mesh(this.instancedGeometry, this.heartMaterial);
                 this.scene.add(this.heart);
-                console.log("Heart particles added");
             }
 
-            addToScene() {
-                this.addModel();
-                this.addHeart();
-                this.addSnow();
-                this.addMovingImages();
-            }
-
+            // ==================== MODEL ====================
             async addModel() {
                 try {
-                    this.model = await this.loadObj(
-                        "https://assets.codepen.io/74321/heart.glb"
-                    );
-                    if (!this.model) {
-                        console.error("Model failed to load: heart.glb");
-                        return;
-                    }
+                    this.model = await this.loadObj("https://assets.codepen.io/74321/heart.glb");
+                    if (!this.model) return;
                     this.model.scale.set(0.5, 0.5, 0.5);
-                    this.model.position.set(0, 0, 0);
                     this.model.material = new THREE.MeshMatcapMaterial({
-                        matcap: this.textureLoader.load(
-                            "./image/nghia.jpg",
-                            () => console.log("Matcap texture loaded successfully"),
-                            undefined,
-                            (err) => console.error("Error loading matcap texture:", err)
-                        ),
+                        matcap: this.textureLoader.load("./image/4.jpg"),
                         color: "#fff"
                     });
                     this.scene.add(this.model);
-                    console.log("Heart model added to scene");
-                } catch (err) {
-                    console.error("Error in addModel:", err);
-                }
+                } catch (err) { console.error(err); }
             }
 
+            loadObj(path) {
+                const loader = new GLTFLoader();
+                return new Promise((resolve, reject) => {
+                    loader.load(path, r => resolve(r.scene.children[0]), null, reject);
+                });
+            }
+
+            // ==================== MUSIC BUTTON ====================
             addButton() {
                 this.audioBtn = document.querySelector("button");
                 this.audioBtn.addEventListener("click", () => {
@@ -572,36 +541,10 @@
                         this.time.t0 = this.time.elapsed;
                         this.data = 0;
                         this.isRunning = true;
-                        gsap.to(this.audioBtn, {
-                            opacity: 0,
-                            duration: 1,
-                            ease: "power1.out"
-                        });
+                        gsap.to(this.audioBtn, { opacity: 0, duration: 1, ease: "power1.out" });
                     } else {
-                        this.loadMusic().then(() => {
-                            console.log("Music loaded");
-                        });
+                        this.loadMusic().then(() => {});
                     }
-                });
-            }
-
-            loadObj(path) {
-                const loader = new GLTFLoader();
-                return new Promise((resolve, reject) => {
-                    loader.load(
-                        path,
-                        response => {
-                            resolve(response.scene.children[0]);
-                            console.log("Heart model loaded");
-                        },
-                        xhr => {
-                            console.log(`Loading model: ${(xhr.loaded / xhr.total * 100).toFixed(2)}%`);
-                        },
-                        err => {
-                            console.error("Error loading model:", err);
-                            reject(err);
-                        }
-                    );
                 });
             }
 
@@ -619,26 +562,17 @@
                             this.sound.setVolume(0.5);
                             this.sound.play();
                             this.analyser = new THREE.AudioAnalyser(this.sound, 32);
-                            const data = this.analyser.getAverageFrequency();
                             this.isRunning = true;
                             this.t0 = this.time.elapsed;
-                            resolve(data);
-                            console.log("Music loaded and playing");
+                            resolve();
                         },
-                        progress => {
-                            gsap.to(this.audioBtn, {
-                                opacity: () => 1 - progress.loaded / progress.total,
-                                duration: 1,
-                                ease: "power1.out"
-                            });
-                        },
-                        error => {
-                            console.error("Error loading music:", error);
-                        }
+                        null,
+                        error => console.error(error)
                     );
                 });
             }
 
+            // ==================== SNOW ====================
             addSnow() {
                 this.snowMaterial = new THREE.ShaderMaterial({
                     fragmentShader: document.getElementById("fragmentShader1").textContent,
@@ -647,12 +581,7 @@
                         uTime: { value: 0 },
                         uSize: { value: 0.3 },
                         uTex: {
-                            value: this.textureLoader.load(
-                                "./image/nghia.jpg",
-                                () => console.log("Snow texture loaded"),
-                                undefined,
-                                (err) => console.error("Error loading snow texture:", err)
-                            )
+                            value: this.textureLoader.load("./image/5.jpg")
                         }
                     },
                     depthWrite: false,
@@ -660,12 +589,12 @@
                     transparent: true
                 });
                 const count = 550;
-                const scales = new Float32Array(count * 1);
+                const scales = new Float32Array(count);
                 const colors = new Float32Array(count * 3);
                 const phis = new Float32Array(count);
                 const randoms = new Float32Array(count);
                 const randoms1 = new Float32Array(count);
-                const colorChoices = ["red", "pink", "hotpink", "green", "aquamarine", "blue"];
+                const colorChoices = ["red","pink","hotpink","green","aquamarine","blue"];
                 const squareGeometry = new THREE.PlaneGeometry(1, 1);
                 this.instancedGeometry = new THREE.InstancedBufferGeometry();
                 Object.keys(squareGeometry.attributes).forEach(attr => {
@@ -674,113 +603,74 @@
                 this.instancedGeometry.index = squareGeometry.index;
                 this.instancedGeometry.maxInstancedCount = count;
                 for (let i = 0; i < count; i++) {
-                    const phi = (Math.random() - 0.5) * 10;
-                    const i3 = 3 * i;
-                    phis[i] = phi;
+                    phis[i] = (Math.random() - 0.5) * 10;
                     randoms[i] = Math.random();
                     randoms1[i] = Math.random();
                     scales[i] = Math.random() * 0.35;
-                    const colorIndex = Math.floor(Math.random() * colorChoices.length);
-                    const color = new THREE.Color(colorChoices[colorIndex]);
-                    colors[i3 + 0] = color.r;
-                    colors[i3 + 1] = color.g;
-                    colors[i3 + 2] = color.b;
+                    const i3 = i * 3;
+                    const color = new THREE.Color(colorChoices[Math.floor(Math.random() * colorChoices.length)]);
+                    colors[i3] = color.r; colors[i3+1] = color.g; colors[i3+2] = color.b;
                 }
-                this.instancedGeometry.setAttribute(
-                    "phi",
-                    new THREE.InstancedBufferAttribute(phis, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "random",
-                    new THREE.InstancedBufferAttribute(randoms, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "random1",
-                    new THREE.InstancedBufferAttribute(randoms1, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "aScale",
-                    new THREE.InstancedBufferAttribute(scales, 1, false)
-                );
-                this.instancedGeometry.setAttribute(
-                    "aColor",
-                    new THREE.InstancedBufferAttribute(colors, 3, false)
-                );
+                this.instancedGeometry.setAttribute("phi", new THREE.InstancedBufferAttribute(phis, 1, false));
+                this.instancedGeometry.setAttribute("random", new THREE.InstancedBufferAttribute(randoms, 1, false));
+                this.instancedGeometry.setAttribute("random1", new THREE.InstancedBufferAttribute(randoms1, 1, false));
+                this.instancedGeometry.setAttribute("aScale", new THREE.InstancedBufferAttribute(scales, 1, false));
+                this.instancedGeometry.setAttribute("aColor", new THREE.InstancedBufferAttribute(colors, 3, false));
                 this.snow = new THREE.Mesh(this.instancedGeometry, this.snowMaterial);
                 this.scene.add(this.snow);
-                console.log("Snow particles added");
             }
 
+            // ==================== MOVING IMAGES (5 ảnh riêng) ====================
             addMovingImages() {
-                this.movingImagesMaterial = new THREE.ShaderMaterial({
-                    fragmentShader: document.getElementById("fragmentShader1").textContent,
-                    vertexShader: document.getElementById("vertexShaderMovingImages").textContent,
-                    uniforms: {
-                        uTime: { value: 0 },
-                        uSize: { value: 1.5 }, // Increased for better click detection
-                        uTex: {
-                            value: this.textureLoader.load(
-                                "./image/nghia.jpg",
-                                () => console.log("Moving images texture loaded"),
-                                undefined,
-                                (err) => console.error("Error loading moving images texture:", err)
-                            )
-                        }
-                    },
-                    depthWrite: false,
-                    blending: THREE.AdditiveBlending,
-                    transparent: true
+                this.movingImagePaths = [
+                    "./image/1.jpg",
+                    "./image/2.jpg",
+                    "./image/3.jpg",
+                    "./image/4.jpg",
+                    "./image/5.jpg",
+                    "./image/6.jpg"
+                ];
+
+                this.movingImagesGroup = new THREE.Group();
+                this.movingImages = [];   // array of individual meshes
+
+                const radius = 3.5;
+                const heightOffset = 1.0;
+
+                this.movingImagePaths.forEach((path, i) => {
+                    const texture = this.textureLoader.load(path);
+                    const material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        transparent: true,
+                        side: THREE.DoubleSide
+                    });
+                    const geometry = new THREE.PlaneGeometry(1.2, 1.2);
+                    const mesh = new THREE.Mesh(geometry, material);
+
+                    const angle = (i / this.movingImagePaths.length) * Math.PI * 2;
+                    const x = radius * Math.cos(angle);
+                    const z = radius * Math.sin(angle);
+                    const y = heightOffset + Math.sin(i) * 0.5;
+
+                    mesh.position.set(x, y, z);
+                    mesh.lookAt(0, y, 0);
+                    mesh.userData.instanceId = i;
+                    mesh.userData.imagePath = path;
+
+                    this.movingImages.push(mesh);
+                    this.movingImagesGroup.add(mesh);
                 });
-                const count = 5;
-                const scales = new Float32Array(count * 1);
-                const colors = new Float32Array(count * 3);
-                const phis = new Float32Array(count);
-                const randoms = new Float32Array(count);
-                const randoms1 = new Float32Array(count);
-                const colorChoices = ["red", "pink", "hotpink", "white", "aquamarine"];
-                const squareGeometry = new THREE.PlaneGeometry(1.5, 1.5); // Increased geometry size
-                this.instancedGeometryMoving = new THREE.InstancedBufferGeometry();
-                Object.keys(squareGeometry.attributes).forEach(attr => {
-                    this.instancedGeometryMoving.attributes[attr] = squareGeometry.attributes[attr];
-                });
-                this.instancedGeometryMoving.index = squareGeometry.index;
-                this.instancedGeometryMoving.maxInstancedCount = count;
-                for (let i = 0; i < count; i++) {
-                    const phi = Math.random() * 2.0 * Math.PI;
-                    const i3 = 3 * i;
-                    phis[i] = phi;
-                    randoms[i] = Math.random();
-                    randoms1[i] = Math.random();
-                    scales[i] = Math.random() * 0.7 + 0.7; // Increased scale range
-                    const colorIndex = Math.floor(Math.random() * colorChoices.length);
-                    const color = new THREE.Color(colorChoices[colorIndex]);
-                    colors[i3 + 0] = color.r;
-                    colors[i3 + 1] = color.g;
-                    colors[i3 + 2] = color.b;
-                }
-                this.instancedGeometryMoving.setAttribute(
-                    "phi",
-                    new THREE.InstancedBufferAttribute(phis, 1, false)
-                );
-                this.instancedGeometryMoving.setAttribute(
-                    "random",
-                    new THREE.InstancedBufferAttribute(randoms, 1, false)
-                );
-                this.instancedGeometryMoving.setAttribute(
-                    "random1",
-                    new THREE.InstancedBufferAttribute(randoms1, 1, false)
-                );
-                this.instancedGeometryMoving.setAttribute(
-                    "aScale",
-                    new THREE.InstancedBufferAttribute(scales, 1, false)
-                );
-                this.instancedGeometryMoving.setAttribute(
-                    "aColor",
-                    new THREE.InstancedBufferAttribute(colors, 3, false)
-                );
-                this.movingImages = new THREE.Mesh(this.instancedGeometryMoving, this.movingImagesMaterial);
-                this.scene.add(this.movingImages);
-                console.log("Moving images added, count:", count);
+
+                this.scene.add(this.movingImagesGroup);
+                console.log("Moving images added (individual meshes):", this.movingImages.length);
+            }
+
+            // ==================== ADD TO SCENE ====================
+            addToScene() {
+                this.addModel();
+                this.addHeart();
+                this.addSnow();
+                this.addMovingImages();
             }
         }
 
@@ -789,7 +679,7 @@
             cameraPosition: { x: 0, y: 0, z: 4.5 }
         });
         world.loop();
-        console.log("World instance created and loop started");
     </script>
 </body>
+
 </html>
