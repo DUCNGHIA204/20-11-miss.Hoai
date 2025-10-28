@@ -30,6 +30,8 @@
             top: 0;
             left: 0;
             outline: none;
+            touch-action: none;  /* Ngăn zoom/scroll khi touch */
+            cursor: pointer;     /* Bắt buộc Safari kích hoạt interactive */
         }
 
         h1 {
@@ -191,7 +193,7 @@
         <img id="modalImage" src="" alt="Enlarged Image">
     </div>
 
-    <!-- Shaders (unchanged, included for completeness) -->
+    <!-- Shaders (unchanged) -->
     <script type="x-shader/x-vertex" id="vertexShader">
         #define M_PI 3.1415926535897932384626433832795
         uniform float uTime;
@@ -270,8 +272,7 @@
         }
     </script>
 
-    <script
-        src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
     <script id="rendered-js" type="module">
         import * as THREE from "https://cdn.skypack.dev/three@0.135.0";
         import { gsap } from "https://cdn.skypack.dev/gsap@3.8.0";
@@ -323,11 +324,9 @@
                 this.pixelRatio = Math.min(window.devicePixelRatio, 2);
                 this.renderer.setPixelRatio(this.pixelRatio);
                 this.renderer.setSize(this.width, this.height);
-                // Raycaster
                 this.raycaster = new THREE.Raycaster();
                 this.raycaster.params.Mesh.threshold = 0.7;
                 this.mouse = new THREE.Vector2();
-                // Modal
                 this.modal = document.getElementById("imageModal");
                 this.modalImage = document.getElementById("modalImage");
                 console.log("World initialized");
@@ -338,8 +337,6 @@
                 this.listenToResize();
                 this.listenToMouseMove();
             }
-
-            start() { }
 
             render() {
                 this.renderer.render(this.scene, this.camera);
@@ -387,7 +384,6 @@
                 }
                 this.camera.lookAt(this.scene.position);
 
-                // Heart & Snow time
                 if (this.heartMaterial) {
                     this.heartMaterial.uniforms.uTime.value +=
                         this.time.delta * this.time.frequency * (1 + this.data * 0.2);
@@ -397,7 +393,6 @@
                         this.time.delta * 0.0004 * (1 + this.data);
                 }
 
-                // ROTATE MOVING IMAGES GROUP
                 if (this.movingImagesGroup) {
                     this.movingImagesGroup.rotation.y += 0.005 * (1 + this.data * 0.5);
                 }
@@ -428,36 +423,54 @@
                 });
             }
 
-            // ==================== CLICK HANDLER ====================
+            // ==================== CLICK + TOUCH HANDLER ====================
             addClickHandler() {
                 this.audioBtn.addEventListener("click", (event) => {
                     event.stopPropagation();
                 });
 
-                window.addEventListener("click", (event) => {
+                const handleInteraction = (event) => {
                     if (event.target === this.modal || event.target === this.modalImage) return;
 
-                    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                    let clientX, clientY;
+                    if (event.type.includes('touch')) {
+                        clientX = event.changedTouches[0].clientX;
+                        clientY = event.changedTouches[0].clientY;
+                    } else {
+                        clientX = event.clientX;
+                        clientY = event.clientY;
+                    }
+
+                    this.mouse.x = (clientX / window.innerWidth) * 2 - 1;
+                    this.mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
                     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-                    // intersectObjects works with an array of meshes
                     const intersects = this.raycaster.intersectObjects(this.movingImages, false);
                     if (intersects.length > 0) {
                         const hit = intersects[0].object;
                         const imgSrc = hit.userData.imagePath;
                         this.modalImage.src = imgSrc;
                         this.modal.style.display = "flex";
+                        console.log("Modal opened on", event.type, "with:", imgSrc);
+                    }
+                };
+
+                window.addEventListener("click", handleInteraction);
+                window.addEventListener("touchend", handleInteraction, { passive: false });
+
+                this.modal.addEventListener("click", (e) => {
+                    if (e.target === this.modal) {
+                        this.modal.style.display = "none";
                     }
                 });
-
-                this.modal.addEventListener("click", () => {
-                    this.modal.style.display = "none";
+                this.modal.addEventListener("touchend", (e) => {
+                    if (e.target === this.modal) {
+                        this.modal.style.display = "none";
+                    }
                 });
             }
 
-            // ==================== HEART ====================
             addHeart() {
                 this.heartMaterial = new THREE.ShaderMaterial({
                     fragmentShader: document.getElementById("fragmentShader").textContent,
@@ -510,7 +523,6 @@
                 this.scene.add(this.heart);
             }
 
-            // ==================== MODEL ====================
             async addModel() {
                 try {
                     this.model = await this.loadObj("https://assets.codepen.io/74321/heart.glb");
@@ -531,7 +543,6 @@
                 });
             }
 
-            // ==================== MUSIC BUTTON ====================
             addButton() {
                 this.audioBtn = document.querySelector("button");
                 this.audioBtn.addEventListener("click", () => {
@@ -572,7 +583,6 @@
                 });
             }
 
-            // ==================== SNOW ====================
             addSnow() {
                 this.snowMaterial = new THREE.ShaderMaterial({
                     fragmentShader: document.getElementById("fragmentShader1").textContent,
@@ -620,19 +630,17 @@
                 this.scene.add(this.snow);
             }
 
-            // ==================== MOVING IMAGES (5 ảnh riêng) ====================
             addMovingImages() {
                 this.movingImagePaths = [
                     "./image/1.jpg",
                     "./image/2.jpg",
                     "./image/3.jpg",
                     "./image/4.jpg",
-                    "./image/5.jpg",
-                    "./image/6.jpg"
+                    "./image/5.jpg"
                 ];
 
                 this.movingImagesGroup = new THREE.Group();
-                this.movingImages = [];   // array of individual meshes
+                this.movingImages = [];
 
                 const radius = 3.5;
                 const heightOffset = 1.0;
@@ -665,7 +673,6 @@
                 console.log("Moving images added (individual meshes):", this.movingImages.length);
             }
 
-            // ==================== ADD TO SCENE ====================
             addToScene() {
                 this.addModel();
                 this.addHeart();
